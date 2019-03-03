@@ -1,0 +1,75 @@
+--- dist/ui-carousel.js.orig	2017-06-18 07:00:47.000000000 +0200
++++ dist/ui-carousel.js	2018-09-22 16:37:55.768905574 +0200
+@@ -263,13 +263,15 @@
+ 
+     // TODO Prevent when track is moving
+     if (_this.isTrackMoving) {
+-      return $q.reject('Track is moving');
++       $timeout(function () {
++          _this.slideHandler(index);
++        }, 200);
+     }
+ 
+     var len = _this.slides.length;
+     var show = _this.options.slidesToShow;
+ 
+-    if (len <= show) {
++    if (len < show) {
+       _this.correctTrack();
+       return $q.reject('Length of slides smaller than slides to show');
+     }
+@@ -572,7 +574,6 @@
+       _this.isClickablePrev = false;
+       _this.isClickableNext = false;
+     }
+-
+     // Re-init UI
+     _this.initUI();
+   };
+@@ -580,19 +581,35 @@
+   /**
+    * refresh model
+    */
+-  $scope.$watchCollection('ctrl.slides', function (slides) {
++  $scope.$watch('ctrl.slides', function (slides) {
+     if (!slides) {
+       return;
+     }
+ 
+     // Init carousel
+     if (_this.currentSlide > slides.length - 1) {
+-      _this.currentSlide = slides.length - 1;
++      _this.currentSlide = 0;
+     }
+ 
+     _this.setupInfinite();
+     _this.refreshCarousel();
+-  });
++  }, true);
++
++  $scope.$watchCollection('ctrl.autoplay', function (autoplay) {
++      _this.options.autoplay = autoplay
++      if ( autoplay ) {
++        _this.next();
++      }
++      else {
++        if (_this.timeout) {
++          $timeout.cancel(_this.timeout);
++        }
++      }
++    })
++
++  $scope.$watchCollection('ctrl.autoplaySpeed', function (autoplaySpeed) {
++      _this.options.autoplaySpeed = autoplaySpeed
++    })
+ 
+   /**
+    * update when resize
+@@ -735,5 +752,6 @@
+   }
+   module.run(['$templateCache', function ($templateCache) {
+     $templateCache.put('ui-carousel/carousel.template.html', '<div class="carousel-wrapper" ng-show="ctrl.isCarouselReady"><div class="track-wrapper"><div class="track" ng-style="ctrl.trackStyle"><div class="slide" ng-repeat="item in ctrl.slidesInTrack track by $index" ng-style="ctrl.getSlideStyle($index)"><div class="carousel-item"></div></div></div></div><div class="carousel-prev" ng-if="!ctrl.disableArrow" ng-show="ctrl.isVisiblePrev &amp;&amp; ctrl.options.arrows" ng-class="{\'carousel-disable\': !ctrl.isClickablePrev}" ng-click="ctrl.prev()"><button class="carousel-btn"><i class="ui-icon-prev"></i></button></div><div class="carousel-next" ng-if="!ctrl.disableArrow" ng-show="ctrl.isVisibleNext &amp;&amp; ctrl.options.arrows" ng-class="{\'carousel-disable\': !ctrl.isClickableNext}" ng-click="ctrl.next()"><button class="carousel-btn"><i class="ui-icon-next"></i></button></div><ul class="carousel-dots" ng-show="ctrl.isVisibleDots &amp;&amp; ctrl.options.dots"><li ng-repeat="dot in ctrl.getDots()" ng-class="{ \'carousel-active\': dot == ctrl.currentSlide/ctrl.options.slidesToScroll }" ng-click="ctrl.movePage(dot)"><button>{{ dot }}</button></li></ul></div>');
++
+   }]);
+ })();
+\ No newline at end of file

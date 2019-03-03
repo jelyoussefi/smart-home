@@ -1,0 +1,28 @@
+{
+    "name": "smarthome_libs",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "preinstall": "rm -rf ./node_modules",
+        "postinstall": "./postinstall.sh"
+    },
+    "dependencies": {
+        "angular": "^1.7.4",
+        "angular-animate": "^1.7.4",
+        "angular-aria": "^1.7.4",
+        "angular-chart.js": "^1.1.1",
+        "angular-material": "^1.1.10",
+        "angular-messages": "^1.7.4",
+        "angular-recaptcha": "^4.2.0",
+        "angular-route": "^1.7.4",
+        "angular-sanitize": "^1.7.4",
+        "angular-snap": "^1.8.5",
+        "angular-socket-io": "^0.7.0",
+        "socket.io-client": "^2.1.1",
+        "angular-ui-carousel": "0.1.10",
+        "chart.js": "^2.7.2",
+        "chartjs-plugin-datalabels": "^0.4.0",
+        "angularjs-slider": "^6.6.1",
+        "moment": "^2.24.0"
+    }
+}

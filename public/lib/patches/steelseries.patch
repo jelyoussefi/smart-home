@@ -1,0 +1,391 @@
+--- steelseries.js.orig	2018-09-22 18:48:09.332785890 +0200
++++ steelseries.js	2018-09-22 18:48:13.621005279 +0200
+@@ -1,8 +1,8 @@
+ /*!
+  * Name          : steelseries.js
+  * Authors       : Gerrit Grunwald, Mark Crossley
+- * Last modified : 25.01.2016
+- * Revision      : 0.14.17
++ * Last modified : 31.03.2015
++ * Revision      : 0.14.15
+  *
+  * Copyright (c) 2011, Gerrit Grunwald, Mark Crossley
+  * All rights reserved.
+@@ -186,11 +186,6 @@
+                 majorTickSpacing = calcNiceNumber(niceRange / (maxNoOfMajorTicks - 1), true);
+                 minorTickSpacing = calcNiceNumber(majorTickSpacing / (maxNoOfMinorTicks - 1), true);
+             }
+-            // Make sure values are still in range
+-            value = value < minValue ? minValue : value > maxValue ? maxValue : value;
+-            minMeasuredValue = minMeasuredValue < minValue ? minValue : minMeasuredValue > maxValue ? maxValue : minMeasuredValue;
+-            maxMeasuredValue = maxMeasuredValue < minValue ? minValue : maxMeasuredValue > maxValue ? maxValue : maxMeasuredValue;
+-            threshold = threshold < minValue ? minValue : threshold > maxValue ? maxValue : threshold;
+ 
+             switch (gaugeType.type) {
+             case 'type1':
+@@ -988,10 +983,12 @@
+             return this;
+         };
+ 
+-        this.setMinValue = function (newValue) {
+-            minValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
++        this.setMinValue = function (value) {
++            minValue = parseFloat(value);
++            resetBuffers({frame: true,
++                          background: true});
++            init({frame: true,
++                  background: true});
+             this.repaint();
+             return this;
+         };
+@@ -1000,10 +997,12 @@
+             return minValue;
+         };
+ 
+-        this.setMaxValue = function (newValue) {
+-            maxValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
++        this.setMaxValue = function (value) {
++            maxValue = parseFloat(value);
++            resetBuffers({frame: true,
++                          background: true});
++            init({frame: true,
++                  background: true});
+             this.repaint();
+             return this;
+         };
+@@ -1024,16 +1023,22 @@
+ 
+         this.setArea = function (areaVal) {
+             area = areaVal;
+-            resetBuffers({background: true});
+-            init({background: true});
++            resetBuffers({background: true,
++                          foreground: true});
++            init({background: true,
++                  foreground: true
++                  });
+             this.repaint();
+             return this;
+         };
+ 
+         this.setSection = function (areaSec) {
+             section = areaSec;
+-            resetBuffers({background: true});
+-            init({background: true});
++            resetBuffers({background: true,
++                          foreground: true});
++            init({background: true,
++                  foreground: true
++                  });
+             this.repaint();
+             return this;
+         };
+@@ -1094,7 +1099,7 @@
+             pointerType = newPointerType;
+             init({pointer: true,
+                   foreground: true
+-                });
++                  });
+             this.repaint();
+             return this;
+         };
+@@ -1549,11 +1554,6 @@
+                 majorTickSpacing = calcNiceNumber(niceRange / (maxNoOfMajorTicks - 1), true);
+                 minorTickSpacing = calcNiceNumber(majorTickSpacing / (maxNoOfMinorTicks - 1), true);
+             }
+-            // Make sure values are still in range
+-            value = value < minValue ? minValue : value > maxValue ? maxValue : value;
+-            minMeasuredValue = minMeasuredValue < minValue ? minValue : minMeasuredValue > maxValue ? maxValue : minMeasuredValue;
+-            maxMeasuredValue = maxMeasuredValue < minValue ? minValue : maxMeasuredValue > maxValue ? maxValue : maxMeasuredValue;
+-            threshold = threshold < minValue ? minValue : threshold > maxValue ? maxValue : threshold;
+ 
+             switch (gaugeType.type) {
+             case 'type1':
+@@ -2217,8 +2217,8 @@
+             return this;
+         };
+ 
+-        this.setMinValue = function (newValue) {
+-            minValue = newValue;
++        this.setMinValue = function (value) {
++            minValue = value;
+             resetBuffers({background: true});
+             init({background: true});
+             this.repaint();
+@@ -2229,8 +2229,8 @@
+             return minValue;
+         };
+ 
+-        this.setMaxValue = function (newValue) {
+-            maxValue = newValue;
++        this.setMaxValue = function (value) {
++            maxValue = value;
+             resetBuffers({background: true});
+             init({background: true});
+             this.repaint();
+@@ -2528,11 +2528,6 @@
+                 minorTickSpacing = 1;
+                 majorTickSpacing = 10;
+             }
+-            // Make sure values are still in range
+-            value = value < minValue ? minValue : value > maxValue ? maxValue : value;
+-            minMeasuredValue = minMeasuredValue < minValue ? minValue : minMeasuredValue > maxValue ? maxValue : minMeasuredValue;
+-            maxMeasuredValue = maxMeasuredValue < minValue ? minValue : maxMeasuredValue > maxValue ? maxValue : maxMeasuredValue;
+-            threshold = threshold < minValue ? minValue : threshold > maxValue ? maxValue : threshold;
+ 
+             freeAreaAngle = 0;
+             rotationOffset = 1.25 * PI;
+@@ -3122,46 +3117,6 @@
+             return this;
+         };
+ 
+-        this.setMinValue = function (newValue) {
+-            minValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
+-            this.repaint();
+-            return this;
+-        };
+-
+-        this.getMinValue = function () {
+-            return minValue;
+-        };
+-
+-        this.setMaxValue = function (newValue) {
+-            maxValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
+-            this.repaint();
+-            return this;
+-        };
+-
+-        this.getMaxValue = function () {
+-            return maxValue;
+-        };
+-
+-        this.setMaxMeasuredValue = function (newValue) {
+-            newValue = parseFloat(newValue);
+-            var targetValue = newValue < minValue ? minValue : (newValue > maxValue ? maxValue : newValue);
+-            maxMeasuredValue = targetValue;
+-            this.repaint();
+-            return this;
+-        };
+-
+-        this.setMinMeasuredValue = function (newValue) {
+-            newValue = parseFloat(newValue);
+-            var targetValue = newValue < minValue ? minValue : (newValue > maxValue ? maxValue : newValue);
+-            minMeasuredValue = targetValue;
+-            this.repaint();
+-            return this;
+-        };
+-
+         this.resetMinMeasuredValue = function () {
+             minMeasuredValue = value;
+             this.repaint();
+@@ -3488,11 +3443,6 @@
+                 minorTickSpacing = 1;
+                 majorTickSpacing = 10;
+             }
+-            // Make sure values are still in range
+-            value = value < minValue ? minValue : value > maxValue ? maxValue : value;
+-            minMeasuredValue = minMeasuredValue < minValue ? minValue : minMeasuredValue > maxValue ? maxValue : minMeasuredValue;
+-            maxMeasuredValue = maxMeasuredValue < minValue ? minValue : maxMeasuredValue > maxValue ? maxValue : maxMeasuredValue;
+-            threshold = threshold < minValue ? minValue : threshold > maxValue ? maxValue : threshold;
+         };
+ 
+         // **************   Buffer creation  ********************
+@@ -4449,6 +4399,12 @@
+         this.setMinValue = function (newVal) {
+             resetBuffers({background: true});
+             minValue = parseFloat(newVal);
++            if (minMeasuredValue < minValue) {
++                minMeasuredValue = minValue;
++            }
++            if (value < minValue) {
++                value = minValue;
++            }
+             init({background: true});
+             this.repaint();
+             return this;
+@@ -4461,6 +4417,12 @@
+         this.setMaxValue = function (newVal) {
+             resetBuffers({background: true});
+             maxValue = parseFloat(newVal);
++            if (maxMeasuredValue > maxValue) {
++                maxMeasuredValue = maxValue;
++            }
++            if (value > maxValue) {
++                value = maxValue;
++            }
+             init({background: true});
+             this.repaint();
+             return this;
+@@ -4681,11 +4643,6 @@
+                 minorTickSpacing = 1;
+                 majorTickSpacing = 10;
+             }
+-            // Make sure values are still in range
+-            value = value < minValue ? minValue : value > maxValue ? maxValue : value;
+-            minMeasuredValue = minMeasuredValue < minValue ? minValue : minMeasuredValue > maxValue ? maxValue : minMeasuredValue;
+-            maxMeasuredValue = maxMeasuredValue < minValue ? minValue : maxMeasuredValue > maxValue ? maxValue : maxMeasuredValue;
+-            threshold = threshold < minValue ? minValue : threshold > maxValue ? maxValue : threshold;
+         };
+ 
+         // **************   Buffer creation  ********************
+@@ -5701,10 +5658,14 @@
+             return this;
+         };
+ 
+-        this.setMinValue = function (newValue) {
+-            minValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
++        this.setMinValue = function (value) {
++            minValue = parseFloat(value);
++            resetBuffers({background: true,
++                          foreground: true,
++                          pointer: true});
++            init({background: true,
++                foreground: true,
++                pointer: true});
+             this.repaint();
+             return this;
+         };
+@@ -5713,10 +5674,14 @@
+             return minValue;
+         };
+ 
+-        this.setMaxValue = function (newValue) {
+-            maxValue = parseFloat(newValue);
+-            resetBuffers({background: true});
+-            init({background: true});
++        this.setMaxValue = function (value) {
++            maxValue = parseFloat(value);
++            resetBuffers({background: true,
++                          foreground: true,
++                          pointer: true});
++            init({background: true,
++                  foreground: true,
++                  pointer: true});
+             this.repaint();
+             return this;
+         };
+@@ -5835,10 +5800,11 @@
+             headerStringVisible = (undefined === parameters.headerStringVisible ? false : parameters.headerStringVisible),
+             digitalFont = (undefined === parameters.digitalFont ? false : parameters.digitalFont),
+             valuesNumeric = (undefined === parameters.valuesNumeric ? true : parameters.valuesNumeric),
+-            value = (undefined === parameters.value ? 0 : parameters.value),
++            value = (undefined === parameters.value ? null : parameters.value),
+             alwaysScroll = (undefined === parameters.alwaysScroll ? false : parameters.alwaysScroll),
+             autoScroll = (undefined === parameters.autoScroll ? false : parameters.autoScroll),
+             section = (undefined === parameters.section ? null : parameters.section);
++            textAlign = (undefined === parameters.textAlign ? "right" : parameters.textAlign);
+ 
+         var scrolling = false;
+         var scrollX = 0;
+@@ -5878,10 +5844,13 @@
+         var sectionForegroundColor = [];
+ 
+         // **************   Image creation  ********************
+-        var drawLcdText = function (value, color) {
++        var drawLcdText = function (value, unitString, color) {
++            if ( value == null ) {
++                return
++            } 
+             mainCtx.save();
+-            mainCtx.textAlign = 'right';
+-            //mainCtx.textBaseline = 'top';
++            mainCtx.textAlign = textAlign;
++            mainCtx.textBaseline = 'center';
+             mainCtx.strokeStyle = color;
+             mainCtx.fillStyle = color;
+ 
+@@ -5916,11 +5885,21 @@
+                     vPos = 0.52;
+                 }
+ 
+-                mainCtx.fillText(lcdText, imageWidth - unitWidth - 4 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                if ( textAlign == "right" ) {
++                    mainCtx.fillText(lcdText, imageWidth - unitWidth - 4 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                }
++                else {
++                    mainCtx.fillText(lcdText, imageWidth/2 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                }
+ 
+                 if (unitStringVisible) {
+                     mainCtx.font = Math.floor(imageHeight / 2.5) + 'px ' + stdFontName;
+-                    mainCtx.fillText(unitString, imageWidth - 2 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                    if ( textAlign == "right" ) {
++                        mainCtx.fillText(unitString, imageWidth - 2 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                    }
++                    else{
++                        mainCtx.fillText(unitString, (imageWidth + textWidth + unitWidth)/2 + 4 - scrollX, imageHeight * 0.5 + fontHeight * vPos);
++                    }
+                 }
+                 if (headerStringVisible) {
+                     mainCtx.textAlign = 'center';
+@@ -5929,6 +5908,7 @@
+                 }
+             } else {
+                 // Text value
++                mainCtx.textBaseline = 'bottom';
+                 textWidth = mainCtx.measureText(value).width;
+                 if (alwaysScroll || (autoScroll && textWidth > imageWidth - 4)) {
+                     if (!scrolling) {
+@@ -6066,6 +6046,23 @@
+             return this;
+         };
+ 
++        this.setUnitString = function (newUnitString) {
++            if (unitString !== newUnitString) {
++                unitString = newUnitString;
++                this.repaint();
++            }
++            return this;
++        };
++
++        this.enableValuesNumeric = function (newValuesNumeric) {
++            valuesNumeric = newValuesNumeric;
++            if (valuesNumeric){
++                value = null;
++            }
++
++            return this;
++        };
++
+         this.setLcdColor = function (newLcdColor) {
+             lcdColor = newLcdColor;
+             init();
+@@ -6081,6 +6078,7 @@
+         };
+ 
+         this.setScrolling = function (scroll) {
++
+             if (scroll) {
+                 if (scrolling) {
+                     return;
+@@ -6120,7 +6118,7 @@
+             mainCtx.drawImage(lcdBackgroundBuffer, 0, 0);
+ 
+             // Draw lcd text
+-            drawLcdText(value, lcdTextColor);
++            drawLcdText(value, unitString, lcdTextColor);
+ 
+             repainting = false;
+         };
+@@ -13976,9 +13974,8 @@
+ 
+     var createLedImage = function (size, state, ledColor) {
+         var ledBuffer, ledCtx,
+-            // Bug in Chrome browser, radialGradients do not draw correctly if the center is not an integer value
+-            ledCenterX = 2 * Math.round(size / 4),
+-            ledCenterY = 2 * Math.round(size / 4),
++            ledCenterX = size / 2,
++            ledCenterY = size / 2,
+             grad,
+             cacheKey = size.toString() + state + ledColor.outerColor_ON;
+ 
