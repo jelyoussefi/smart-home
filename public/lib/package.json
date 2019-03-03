@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "postinstall": "./postinstall.sh"
+        "postinstall": "git clone http://github.com/HanSolo/SteelSeries-Canvas.git steelseries"
     },
     "dependencies": {
         "angular": "^1.7.4",
